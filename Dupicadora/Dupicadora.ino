@@ -1,10 +1,11 @@
 #include "Stepper.h"
+#include "Funciones.h"
 
 #define Pin_Rele 32
-#define Pin_Enable_Motor_X 13 
+#define Pin_Enable_Motor_X 13
 #define Pin_Dir_Motor_X 12
 #define Pin_Pulse_Motor_X 14
-#define Pin_Enable_Motor_A 27 
+#define Pin_Enable_Motor_A 27
 #define Pin_Dir_Motor_A 26
 #define Pin_Pulse_Motor_A 25
 #define Pin_Sensor_X 34
@@ -25,31 +26,22 @@ bool sensor_x = 0;
 bool sensor_a = 0;
 uint16_t steps_x = 0;
 uint16_t steps_a = 0;
-
-void MotorAC_enable(){
-    digitalWrite(Pin_Rele,LOW);
-}
-
-void MotorAC_disable(){
-    digitalWrite(Pin_Rele,HIGH);
-}
-
-
+uint16_t *llave;
 
 void setup()
 {
-    pinMode(Pin_Enable_Motor_X,OUTPUT);
-	pinMode(Pin_Dir_Motor_X,OUTPUT);
-    pinMode(Pin_Pulse_Motor_X,OUTPUT);
-    pinMode(Pin_Enable_Motor_A,OUTPUT);
-	pinMode(Pin_Dir_Motor_A,OUTPUT);
-    pinMode(Pin_Pulse_Motor_A,OUTPUT);
-    pinMode(Pin_Rele,OUTPUT);
-    pinMode(Pin_Sensor_X,INPUT_PULLDOWN);
-    pinMode(Pin_Sensor_A,INPUT_PULLDOWN);    
+    pinMode(Pin_Enable_Motor_X, OUTPUT);
+    pinMode(Pin_Dir_Motor_X, OUTPUT);
+    pinMode(Pin_Pulse_Motor_X, OUTPUT);
+    pinMode(Pin_Enable_Motor_A, OUTPUT);
+    pinMode(Pin_Dir_Motor_A, OUTPUT);
+    pinMode(Pin_Pulse_Motor_A, OUTPUT);
+    pinMode(Pin_Rele, OUTPUT);
+    pinMode(Pin_Sensor_X, INPUT_PULLDOWN);
+    pinMode(Pin_Sensor_A, INPUT_PULLDOWN);
+    llave = generarLlave();
 }
 
 void loop()
 {
-	
 }

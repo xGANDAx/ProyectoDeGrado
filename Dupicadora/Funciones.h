@@ -1,4 +1,3 @@
-
-void MotorAC_enable()
-void MotorAC_disable()
-uint16_t * generarLLave()
+void MotorAC_enable();
+void MotorAC_disable();
+uint16_t *generarLlave();
