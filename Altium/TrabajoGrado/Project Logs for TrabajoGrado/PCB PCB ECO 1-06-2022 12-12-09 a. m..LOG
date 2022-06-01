@@ -1,0 +1,18 @@
+Removed Pin From Net: NetName=GND Pin=K?-COIL2
+Change Component Footprint: Designator=K? Old Footprint=RELAY_SRD-12VDC-SL-C New Footprint=RELAY_SRD-05VDC-SL-C
+Change Component Comment : Designator=K? Old Comment=SRD-12VDC-SL-C New Comment=SRD-05VDC-SL-C
+Change component parameters: Designator = "K?" ("K?"); Footprint = "RELAY_SRD-12VDC-SL-C"; UniqueID = "\OQLHLRLE" ("\OQLHLRLE")
+Change component parameters (AddParameter): Name = "Availability"; Value = "Not in stock"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Check_prices"; Value = "https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=eda"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MF"; Value = "Songle Relay"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MP"; Value = "SRD-05VDC-SL-C"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "None"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Price"; Value = "None"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "SnapEDA_Link"; Value = "https://www.snapeda.com/parts/SRD-05VDC-SL-C/Songle+Relay/view-part/?ref=snap"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=K?-A2
+Added Pin To Net: NetName=NetK?_A1 Pin=K?-A1
+Added Pin To Net: NetName=NetK?_A1 Pin=Q?-3
+Added Net: Name=NetK?_A1
+Added Member To Class: ClassName=Esquematico Member=Component P? 61300511021
+Added Member To Class: ClassName=Esquematico Member=Component P? 61300411021
