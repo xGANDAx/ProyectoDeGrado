@@ -1,4 +1,6 @@
 #include "Funciones.h"
+#include "stdint.h"
+#include "Arduino.h"
 
 #ifndef Pin_Rele
 #define Pin_Rele 32
@@ -14,10 +16,9 @@ void MotorAC_disable()
     digitalWrite(Pin_Rele, HIGH);
 }
 
-uint16_t *generarLlave()
+void generarLlave(uint16_t key[])
 {
     uint16_t y_offset[5];
-    uint16_t key[1501];
     uint16_t y_limit = 300;
     uint16_t y_min = 30;
     uint16_t y_temp;
@@ -27,7 +28,7 @@ uint16_t *generarLlave()
     {
         y_offset[i] = random(0, 30) * 10 - y_min;
     }
-    for (uint16_t i = 0; i <= 1501; i++)
+    for (uint16_t i = 0; i <= 1500; i++)
     {
         y_final = y_limit;
         for (uint8_t j = 0; j <= 5; j++)
@@ -38,5 +39,28 @@ uint16_t *generarLlave()
         }
         key[i] = y_final;
     }
-    return key;
+}
+
+void generarLlave(uint16_t key[], uint16_t offsets[5])
+{
+    uint16_t y_limit = 300;
+    uint16_t y_min = 30;
+    uint16_t y_temp;
+    uint16_t y_calculated;
+    uint16_t y_final;
+    for (uint8_t i = 0; i <= 5; i++)
+    {
+        offsets[i] = random(0, 30) * 10 - y_min;
+    }
+    for (uint16_t i = 0; i <= 1500; i++)
+    {
+        y_final = y_limit;
+        for (uint8_t j = 0; j <= 5; j++)
+        {
+            y_temp = abs(i - 250);
+            y_calculated = max(y_temp, y_min) + offsets[i];
+            y_final = min(y_calculated, y_final);
+        }
+        key[i] = y_final;
+    }
 }
