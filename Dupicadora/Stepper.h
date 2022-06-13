@@ -25,7 +25,7 @@ public:
     void MoveSteps(int16_t steps);
     void MovePosition(int position);
     void reset();
-    void sound();
+    void sound(int frecuency);
     bool getStatus();
     int getPosition();
 };
