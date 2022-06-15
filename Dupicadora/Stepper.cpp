@@ -3,13 +3,14 @@
 #include "stdint.h"
 
 // Constructor
-Stepper::Stepper(int Pin_enable, int Pin_dir, int Pin_steps, int Pin_sensor, bool reset_direction)
+Stepper::Stepper(int Pin_enable, int Pin_dir, int Pin_steps, int Pin_sensor, bool reset_direction, int reset_speed)
 {
     this->Pin_enable = Pin_enable;
     this->Pin_dir = Pin_dir;
     this->Pin_steps = Pin_steps;
     this->Pin_sensor = Pin_sensor;
     this->reset_direction = reset_direction;
+    this->reset_speed = reset_speed;
 }
 
 // Asigna la velocidad del motor (en revision)
@@ -39,7 +40,7 @@ void Stepper::MoveSteps(int16_t steps)
     {
         enable();
     }
-    if (steps<0)
+    if (steps < 0)
     {
         digitalWrite(Pin_dir, reset_direction);
     }
@@ -65,8 +66,27 @@ void Stepper::reset()
         enable();
     }
 
+    step_delay = reset_speed;
     digitalWrite(Pin_dir, reset_direction);
+    while (!digitalRead(Pin_sensor))
+    {
+        digitalWrite(Pin_steps, HIGH);
+        delayMicroseconds(step_delay);
+        digitalWrite(Pin_steps, LOW);
+        delayMicroseconds(step_delay);
+    }
 
+    step_delay = 10 * reset_speed;
+    digitalWrite(Pin_dir, !reset_direction);
+    while (digitalRead(Pin_sensor))
+    {
+        digitalWrite(Pin_steps, HIGH);
+        delayMicroseconds(step_delay);
+        digitalWrite(Pin_steps, LOW);
+        delayMicroseconds(step_delay);
+    }
+
+    digitalWrite(Pin_dir, reset_direction);
     while (!digitalRead(Pin_sensor))
     {
         digitalWrite(Pin_steps, HIGH);
@@ -124,7 +144,7 @@ void Stepper::sound(int frecuency)
     {
         enable();
     }
-    
+
     digitalWrite(Pin_dir, reset_direction);
     for (int step = 0; step < 20000; step++)
     {
