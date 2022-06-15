@@ -21,14 +21,14 @@ void Stepper::setSpeed(long speed)
 // Habilita el motor
 void Stepper::enable()
 {
-    digitalWrite(Pin_enable, HIGH);
+    digitalWrite(Pin_enable, LOW);
     status = true;
 }
 
 // Deshabilita el motor
 void Stepper::disable()
 {
-    digitalWrite(Pin_enable, LOW);
+    digitalWrite(Pin_enable, HIGH);
     status = false;
 }
 
@@ -48,7 +48,7 @@ void Stepper::MoveSteps(int16_t steps)
         digitalWrite(Pin_dir, !reset_direction);
     }
 
-    for (int step = 0; step < steps; step++)
+    for (int step = 0; step < abs(steps); step++)
     {
         digitalWrite(Pin_steps, HIGH);
         delayMicroseconds(step_delay);
@@ -118,18 +118,19 @@ int Stepper::getPosition()
 }
 
 // Emite un pitido
-void Stepper::sound()
+void Stepper::sound(int frecuency)
 {
-    if (status)
+    if (!status)
     {
         enable();
     }
-
-    for (int step = 0; step < 100; step++)
+    
+    digitalWrite(Pin_dir, reset_direction);
+    for (int step = 0; step < 20000; step++)
     {
         digitalWrite(Pin_steps, HIGH);
-        delayMicroseconds(10);
+        delayMicroseconds(frecuency);
         digitalWrite(Pin_steps, LOW);
-        delayMicroseconds(10);
+        delayMicroseconds(frecuency);
     }
 }
