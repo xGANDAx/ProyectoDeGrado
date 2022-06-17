@@ -1,3 +1,5 @@
 {
-    "board": "esp32:esp32:esp32"
+    "board": "esp32:esp32:esp32",
+    "sketch": "Dupicadora\\Dupicadora.ino",
+    "port": "COM6"
 }

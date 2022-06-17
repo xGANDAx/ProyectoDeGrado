@@ -11,13 +11,14 @@ private:
     // Varibles
     int step_delay;
     int position;
+    int reset_speed;
     bool direction;
     bool status;
     bool reset_direction;
 
 public:
     // Constructor
-    Stepper(int Pin_enable, int Pin_dir, int Pin_steps, int Pin_sensor, bool reset_direction);
+    Stepper(int Pin_enable, int Pin_dir, int Pin_steps, int Pin_sensor, bool reset_direction, int reset_speed);
     // Funciones
     void enable();
     void disable();
