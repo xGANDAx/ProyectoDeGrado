@@ -1,0 +1,7 @@
+Removed Pin From Net: NetName=NetC2_1 Pin=C2-1
+Removed Pin From Net: NetName=GND Pin=C2-2
+Added Pin To Net: NetName=GND Pin=C2-1
+Added Pin To Net: NetName=NetC2_1 Pin=C2-2
+Change Net Name : Old Net Name=NetC2_1 New Net Name=NetC2_2
+Added Member To Class: ClassName=Esquematico Member=Component P? 61300411021
+Added Member To Class: ClassName=Esquematico Member=Component P? 61300511021
