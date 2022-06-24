@@ -58,6 +58,7 @@ uint16_t llave[1500];
 uint16_t progreso = 0;
 uint16_t t_x = 0, t_y = 0;
 boolean pressed;
+bool gListo = false;
 
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
@@ -148,6 +149,16 @@ void setup()
                            TFT_WHITE, // FILL
                            "Nuevo P.", // TEXT TO PRINT
                            1); // TEXT SIZE: SEE ABOVE Line 23
+  generarCorta.initButton(&tft, // REF - LEAVE AS IS
+                        230, // X Cord: SEE ABOVE Line 19
+                        200, // Y CORD: SEE ABOVE Line 20
+                        120, // WIDTH: SEE ABOVE Line 21
+                        50, // HEIGHT: SEE ABOVE Line 22
+                        TFT_WHITE, // OUTLINE
+                        TFT_BLUE, // TEXT COLOR
+                        TFT_WHITE, // FILL
+                        "Cortar", // TEXT TO PRINT
+                        1); // TEXT SIZE: SEE ABOVE Line 23
 
   Home.initButton(&tft, // REF - LEAVE AS IS
                   15, // X Cord: SEE ABOVE Line 19
@@ -284,11 +295,11 @@ MenuPrincipal:
             // Generacion barra de carga
             tft.setFreeFont(LABEL1_FONT);
             tft.fillScreen(TFT_BLACK);
-            tft.setCursor(130, 15);
+            tft.setCursor(130, 20);
             tft.setTextColor(TFT_BLUE);
             tft.setTextSize(1);
             tft.println("Copiar");
-            tft.drawLine(0, 20, 320, 20, TFT_BLUE);
+            tft.drawLine(0, 30, 320, 30, TFT_BLUE);
             tft.setCursor(110, 85);
             tft.setTextColor(TFT_WHITE, TFT_BLUE);
             tft.println("Copiando...");
@@ -328,12 +339,12 @@ MenuPrincipal:
         //  Pantallazo "finalizado"
         tft.setFreeFont(LABEL1_FONT);
         tft.fillScreen(TFT_BLACK);
-        tft.setCursor(130, 15);
+        tft.setCursor(130, 20);
         tft.setTextColor(TFT_BLUE);
         tft.setTextSize(1);
         tft.println("Copiar");
-        tft.drawLine(0, 20, 320, 20, TFT_BLUE);
-        tft.setCursor(110, 90);
+        tft.drawLine(0, 30, 320, 30, TFT_BLUE);
+        tft.setCursor(110, 120);
         tft.setTextColor(TFT_WHITE, TFT_BLUE);
         tft.println("¡Finalizado!");
         tft.setTextSize(2);
@@ -446,8 +457,9 @@ MenuPrincipal:
           tft.setFreeFont(LABEL2_FONT);
           generarListo2.drawButton();
           generarCorta.drawButton();
-          bool gListo = false;
-          while (true);
+          delay(500);
+          
+          while (true)
           {
             t_x = 0;
             t_y = 0;
@@ -478,11 +490,11 @@ MenuPrincipal:
             // Generacion barra de carga
             tft.setFreeFont(LABEL1_FONT);
             tft.fillScreen(TFT_BLACK);
-            tft.setCursor(130, 15);
+            tft.setCursor(130, 20);
             tft.setTextColor(TFT_BLUE);
             tft.setTextSize(1);
-            tft.println("Copiar");
-            tft.drawLine(0, 20, 320, 20, TFT_BLUE);
+            tft.println("Generar");
+            tft.drawLine(0, 30, 320, 30, TFT_BLUE);
             tft.setCursor(110, 85);
             tft.setTextColor(TFT_WHITE, TFT_BLUE);
             tft.println("Generando...");
@@ -502,24 +514,29 @@ MenuPrincipal:
         //  Pantallazo "finalizado"
         tft.setFreeFont(LABEL1_FONT);
         tft.fillScreen(TFT_BLACK);
-        tft.setCursor(130, 15);
+        tft.setCursor(130, 20);
         tft.setTextColor(TFT_BLUE);
         tft.setTextSize(1);
-        tft.println("Copiar");
-        tft.drawLine(0, 20, 320, 20, TFT_BLUE);
-        tft.setCursor(110, 90);
+        tft.println("Generar");
+        tft.drawLine(0, 30, 320, 30, TFT_BLUE);
+        tft.setCursor(110, 120);
         tft.setTextColor(TFT_WHITE, TFT_BLUE);
         tft.println("¡Finalizado!");
         tft.setTextSize(2);
         tft.setFreeFont(LABEL2_FONT);
         Home.drawButton();
         Serial.println("Finalizado");
+        delay(5000);
         break;
         
       }
       // Seccion de la grata
       else if (str == "f" || grata.contains(t_x, t_y))
       {
+        if(!digitalRead(Pin_Sensor_X) && !digitalRead(Pin_Sensor_A)){
+          Motor_x.reset();
+          Motor_a.reset();
+        }
         // Generacion del menu de grata
         tft.setFreeFont(LABEL1_FONT);
         tft.fillScreen(TFT_BLACK);
@@ -536,14 +553,15 @@ MenuPrincipal:
         Serial.println("s : Salir");
         while (true)
         {
+          Serial.println(grataStatus);
           // Generacion boton cambiante de la grata
-          if (grataStatus = false)
+          if (grataStatus)
           {
-            grataON.drawButton();
+            grataOFF.drawButton();
           }
           else
           {
-            grataOFF.drawButton();
+            grataON.drawButton();
           }
 
           // Manipulacion de la grata
@@ -557,14 +575,14 @@ MenuPrincipal:
               String str = Serial.readStringUntil('\n');
               str.toLowerCase();
               str.trim();
-              if (str == "a" || grataON.contains(t_x, t_y))
+              if (str == "a" || (grataON.contains(t_x, t_y) && !grataStatus))
               {
                 grataStatus = true;
                 digitalWrite(Pin_Rele, HIGH);
                 delay(500);
                 break;
               }
-              else if (str == "d" || grataON.contains(t_x, t_y))
+              else if (str == "d" || (grataOFF.contains(t_x, t_y) && grataStatus))
               {
                 grataStatus = false;
                 digitalWrite(Pin_Rele, LOW);
