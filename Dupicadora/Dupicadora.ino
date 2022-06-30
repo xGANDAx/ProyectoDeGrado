@@ -54,7 +54,7 @@ bool key_ready = false;
 bool grataStatus = false;
 uint16_t steps_x = 0;
 uint16_t steps_a = 0;
-uint16_t llave[1500];
+double llave[271];
 uint16_t progreso = 0;
 uint16_t t_x = 0, t_y = 0;
 boolean pressed;
@@ -643,6 +643,15 @@ MenuPrincipal:
         Motor_x.MovePosition(pasos);
         Serial.print("x(mm)=");
         Serial.println(posd);
+      }
+      else if (str[0] == 'z')
+      {
+        generarLlave2(llave);
+        for(int i = 0; i<271;i++)
+        {
+          Serial.print(llave[i]);
+          Serial.print(",");
+        }
       }
     }
   }
