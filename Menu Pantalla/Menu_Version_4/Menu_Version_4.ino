@@ -1,5 +1,6 @@
 #include "FS.h"
 
+#include "Logoud.h"
 #include <SPI.h>
 #include <TFT_eSPI.h>
 TFT_eSPI tft = TFT_eSPI();
@@ -22,14 +23,18 @@ TFT_eSPI_Button gratasON;
 TFT_eSPI_Button gratasOFF;
 
 int pag = 0;
+char enhe =0xEE;
+
+
 
 void setup() {
   Serial.begin(9600);
 
   tft.begin();
   tft.setRotation(1);
+  tft.setSwapBytes(true);
   touch_calibrate();
-  menu();
+  inicio();
 }
 
 void loop() {
@@ -106,6 +111,29 @@ void loop() {
   } else {
     gratasOFF.press(false); // tell the button it is NOT pressed
   }
+}
+
+void inicio(){
+  tft.fillScreen(TFT_BLACK);
+  tft.pushImage(0, 0, animation_width, animation_height, logoud[0]);
+  delay(3000);
+  tft.fillScreen(TFT_BLACK);
+  tft.setFreeFont(LABEL3_FONT);
+  tft.setCursor(90, 60);
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(1);
+  tft.println("Desarrollado por:");
+  tft.setFreeFont(LABEL1_FONT);
+  tft.setCursor(90, 120);
+  tft.println("Jhoan F. Patino");
+  tft.setCursor(217, 110);
+  tft.print("-");
+  tft.setCursor(150, 150);
+  tft.println("&");
+  tft.setCursor(85, 180);
+  tft.println("Jonathan Chitiva");
+  delay(3500);
+  menu();
 }
 
 void menu() {
