@@ -54,7 +54,7 @@ bool key_ready = false;
 bool grataStatus = false;
 uint16_t steps_x = 0;
 uint16_t steps_a = 0;
-double llave[271];
+float llave[271];
 uint16_t progreso = 0;
 uint16_t t_x = 0, t_y = 0;
 boolean pressed;
@@ -80,7 +80,7 @@ Stepper Motor_a(Pin_Enable_Motor_A, Pin_Dir_Motor_A, Pin_Pulse_Motor_A, Pin_Sens
 void setup()
 {
   // Inicialixacion serial (Solo pruebas)
-  Serial.begin(9600);
+  Serial.begin(115200);
   // Inicializacion pantalla
   tft.begin();
   tft.setRotation(1);
