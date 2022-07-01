@@ -191,7 +191,7 @@ void menuCopia() {
   pag = 2;
   tft.fillScreen(TFT_BLACK);
   tft.setFreeFont(LABEL4_FONT);
-  tft.setCursor(90,120);
+  tft.setCursor(100,120);
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(1);
   tft.print("Cargando");
@@ -357,6 +357,19 @@ void grataON() {
 
 void generarMenu() {
   pag = 4;
+  tft.fillScreen(TFT_BLACK);
+  tft.setFreeFont(LABEL4_FONT);
+  tft.setCursor(100,120);
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(1);
+  tft.print("Cargando");
+  delay(700);
+  tft.print(".");
+  delay(700);
+  tft.print(".");
+  delay(700);
+  tft.print(".");
+  delay(700);
   tft.setFreeFont(LABEL1_FONT);
   tft.fillScreen(TFT_BLACK);
   tft.setCursor(130, 20);
@@ -435,12 +448,12 @@ void generarAjustes(){
   tft.fillTriangle(278,90,300,90,300,120,TFT_BLACK);
   tft.fillTriangle(250,150,300,105,300,150,TFT_BLACK);
   /////TRIANGULOS PATRON GUARDAS/////
-  int guarda[] ={random(1,7),random(1,7),random(1,7),random(1,7),random(1,7)};
-  tft.fillTriangle(161,83,183,83,172,round(3.83*guarda[0]+83.16),TFT_BLACK);
-  tft.fillTriangle(183,83,205,83,194,round(3.83*guarda[1]+83.16),TFT_BLACK);
-  tft.fillTriangle(205,83,227,83,216,round(3.83*guarda[2]+83.16),TFT_BLACK);
-  tft.fillTriangle(227,83,249,83,238,round(3.83*guarda[3]+83.16),TFT_BLACK);
-  tft.fillTriangle(249,83,271,83,260,round(3.83*guarda[4]+83.16),TFT_BLACK);
+  int guarda[] ={random(1,10),random(1,10),random(1,10),random(1,10),random(1,10)};
+  tft.fillTriangle(161,83,183,83,172,round(2.55*guarda[0]+84.44),TFT_BLACK);
+  tft.fillTriangle(183,83,205,83,194,round(2.55*guarda[1]+84.44),TFT_BLACK);
+  tft.fillTriangle(205,83,227,83,216,round(2.55*guarda[2]+84.44),TFT_BLACK);
+  tft.fillTriangle(227,83,249,83,238,round(2.55*guarda[3]+84.44),TFT_BLACK);
+  tft.fillTriangle(249,83,271,83,260,round(2.55*guarda[4]+84.44),TFT_BLACK);
   //NUMEROS DE LAS GUARDAS//
   tft.drawRoundRect(155,40,120,40,5,TFT_WHITE);
   tft.drawLine(155, 60, 275, 60, TFT_WHITE);
