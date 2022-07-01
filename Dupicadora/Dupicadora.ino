@@ -150,15 +150,15 @@ void setup()
                            "Nuevo P.", // TEXT TO PRINT
                            1); // TEXT SIZE: SEE ABOVE Line 23
   generarCorta.initButton(&tft, // REF - LEAVE AS IS
-                        230, // X Cord: SEE ABOVE Line 19
-                        200, // Y CORD: SEE ABOVE Line 20
-                        120, // WIDTH: SEE ABOVE Line 21
-                        50, // HEIGHT: SEE ABOVE Line 22
-                        TFT_WHITE, // OUTLINE
-                        TFT_BLUE, // TEXT COLOR
-                        TFT_WHITE, // FILL
-                        "Cortar", // TEXT TO PRINT
-                        1); // TEXT SIZE: SEE ABOVE Line 23
+                          230, // X Cord: SEE ABOVE Line 19
+                          200, // Y CORD: SEE ABOVE Line 20
+                          120, // WIDTH: SEE ABOVE Line 21
+                          50, // HEIGHT: SEE ABOVE Line 22
+                          TFT_WHITE, // OUTLINE
+                          TFT_BLUE, // TEXT COLOR
+                          TFT_WHITE, // FILL
+                          "Cortar", // TEXT TO PRINT
+                          1); // TEXT SIZE: SEE ABOVE Line 23
 
   Home.initButton(&tft, // REF - LEAVE AS IS
                   15, // X Cord: SEE ABOVE Line 19
@@ -386,7 +386,7 @@ MenuPrincipal:
         tft.setFreeFont(LABEL1_FONT);
         Home.drawButton();
         Serial.println("Oprima cualquier tecla para continuar");
-        
+
         while (true)
         {
           t_x = 0;
@@ -401,7 +401,7 @@ MenuPrincipal:
             goto MenuPrincipal;
           }
         }
-        
+
         while (true)
         {
           tft.setFreeFont(LABEL1_FONT);
@@ -458,7 +458,7 @@ MenuPrincipal:
           generarListo2.drawButton();
           generarCorta.drawButton();
           delay(500);
-          
+
           while (true)
           {
             t_x = 0;
@@ -474,7 +474,7 @@ MenuPrincipal:
                 break;
               }
               else if (str == "d" || generarCorta.contains(t_x, t_y))
-              { 
+              {
                 gListo = true;
                 break;
               }
@@ -484,7 +484,7 @@ MenuPrincipal:
               }
             }
           }
-          if(gListo){
+          if (gListo) {
             // Activacion barra de progreso
             timerAlarmEnable(timer);
             // Generacion barra de carga
@@ -528,12 +528,12 @@ MenuPrincipal:
         Serial.println("Finalizado");
         delay(5000);
         break;
-        
+
       }
       // Seccion de la grata
       else if (str == "f" || grata.contains(t_x, t_y))
       {
-        if(!digitalRead(Pin_Sensor_X) && !digitalRead(Pin_Sensor_A)){
+        if (!digitalRead(Pin_Sensor_X) && !digitalRead(Pin_Sensor_A)) {
           Motor_x.reset();
           Motor_a.reset();
         }
@@ -575,7 +575,7 @@ MenuPrincipal:
               String str = Serial.readStringUntil('\n');
               str.toLowerCase();
               str.trim();
-              if (str == "a" || (grataON.contains(t_x, t_y) && !grataStatus))
+              if (str == "y" || (grataON.contains(t_x, t_y) && !grataStatus))
               {
                 grataStatus = true;
                 digitalWrite(Pin_Rele, HIGH);
@@ -588,6 +588,33 @@ MenuPrincipal:
                 digitalWrite(Pin_Rele, LOW);
                 delay(500);
                 break;
+              }
+              else if (str[0] == 'm')
+              {
+                double posd = str.substring(2).toDouble();
+                int pasos = round((posd - 0.25181) / 0.00126);
+                Motor_x.setSpeed(800);
+                Motor_x.MovePosition(pasos);
+                Serial.print("x(mm)=");
+                Serial.println(posd);
+              }
+              else if (str[0] == 'a')
+              {
+                int posd = str.substring(2).toInt();
+                if (posd < 0)
+                {
+                  Motor_a.disable();
+                }
+                else if(posd == 0 ){
+                  Motor_a.reset();
+                }
+                else
+                {
+                  Motor_a.setSpeed(1500);
+                  Motor_a.MovePosition(posd);
+                  Serial.print("a=");
+                  Serial.println(posd);
+                }
               }
               else if (str == "s" || Home.contains(t_x, t_y))
               {
@@ -647,7 +674,7 @@ MenuPrincipal:
       else if (str[0] == 'z')
       {
         generarLlave2(llave);
-        for(int i = 0; i<271;i++)
+        for (int i = 0; i < 271; i++)
         {
           Serial.print(llave[i]);
           Serial.print(",");
