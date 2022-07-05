@@ -1,0 +1,6 @@
+Removed Pin From Net: NetName=NetJ5_1_2 Pin=U1-27
+Removed Pin From Net: NetName=NetJ5_1_1 Pin=U1-28
+Added Pin To Net: NetName=NetJ5_1_1 Pin=U1-27
+Added Pin To Net: NetName=NetJ5_1_2 Pin=U1-28
+Added Member To Class: ClassName=Esquematico Member=Component P? 61300511021
+Added Member To Class: ClassName=Esquematico Member=Component P? 61300411021

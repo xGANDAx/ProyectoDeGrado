@@ -1,0 +1,11 @@
+Removed Pin From Net: NetName=GND Pin=J5_2-1
+Removed Pin From Net: NetName=NetJ5_2_2 Pin=U1-26
+Removed Pin From Net: NetName=NetJ5_1_2 Pin=U1-28
+Added Pin To Net: NetName=GND Pin=J5_1-1
+Added Pin To Net: NetName=NetJ5_1_2 Pin=U1-27
+Added Pin To Net: NetName=NetJ5_2_2 Pin=U1-28
+Added Pin To Net: NetName=NetJ5_2_1 Pin=J5_2-1
+Added Pin To Net: NetName=NetJ5_2_1 Pin=U1-26
+Added Net: Name=NetJ5_2_1
+Added Member To Class: ClassName=Esquematico Member=Component P? 61300411021
+Added Member To Class: ClassName=Esquematico Member=Component P? 61300511021
