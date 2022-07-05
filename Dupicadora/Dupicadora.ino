@@ -2,7 +2,6 @@
 #include "FS.h"
 
 #include "Stepper.h"
-#include "Funciones.h"
 #include "stdint.h"
 #include <SPI.h>
 #include <TFT_eSPI.h>
@@ -404,6 +403,45 @@ MenuPrincipal:
 
         while (true)
         {
+          // Calibracion rapida y posicion inicial
+          Motor_a.reset();
+          Motor_a.setSpeed(100);
+          Ymm(0.0);
+          Motor_x.reset();
+          Motor_x.setSpeed(25);
+          Xmm(40.0);
+
+          // Algoritmo generador de llaves
+          randomSeed(micros());
+          uint8_t guarda[5] = {random(1, 10), random(1, 10), random(1, 10), random(1, 10), random(1, 10)};
+          float y_offset[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+          float y_limit = 4;
+          float y_min = 0.4;
+          float y_temp;
+          float y_calculated;
+          float y_final;
+          float xg[6] = {6.0, 9.8, 13.6, 17.4, 21.2, 27.0};
+          for (uint8_t i = 0; i <= 4; i++)
+          {
+            y_offset[i] = guarda[i]  * 0.4;
+          }
+
+          for (uint16_t i = 0; i <= 270; i++)
+          {
+            y_final = y_limit;
+            for (uint8_t j = 0; j <= 5; j++)
+            {
+              y_temp = abs((i + 0.0) / 10.0 - xg[j]);
+              if (j == 5) {
+                y_calculated = y_temp;
+              } else {
+                y_calculated = max(y_temp, y_min) + y_offset[j] - y_min;
+              }
+              y_final = min(y_calculated, y_final);
+            }
+            llave[i] = y_final;
+          }
+          //Pantallaso preview llave generada
           tft.setFreeFont(LABEL1_FONT);
           tft.fillScreen(TFT_BLACK);
           tft.setCursor(130, 20);
@@ -425,7 +463,6 @@ MenuPrincipal:
           tft.fillTriangle(278, 90, 300, 90, 300, 120, TFT_BLACK);
           tft.fillTriangle(250, 150, 300, 105, 300, 150, TFT_BLACK);
           /////TRIANGULOS PATRON GUARDAS/////
-          int guarda[] = {random(1, 7), random(1, 7), random(1, 7), random(1, 7), random(1, 7)};
           tft.fillTriangle(161, 83, 183, 83, 172, round(3.83 * guarda[0] + 83.16), TFT_BLACK);
           tft.fillTriangle(183, 83, 205, 83, 194, round(3.83 * guarda[1] + 83.16), TFT_BLACK);
           tft.fillTriangle(205, 83, 227, 83, 216, round(3.83 * guarda[2] + 83.16), TFT_BLACK);
@@ -504,8 +541,20 @@ MenuPrincipal:
           }
         }
         // Generando llave
-        delay(55000);
-
+        Motor_a.setSpeed(1500);
+        Motor_x.setSpeed(1000);
+        for (int i = 0; i < 2; i++);
+        {
+          for (int xp = 0; xp < 271; xp++)
+          {
+            Ymm(llave[xp]);
+            Xmm(40.0 - (xp + 0.0) / 10.0);
+            Serial.print("Y = ");
+            Serial.print(llave[xp]);
+            Serial.print(", X = ");
+            Serial.println(40.0 - (xp + 0.0) / 10.0);
+          }
+        }
 
         //Deshabilita la pantalla de carga
         timerAlarmDisable(timer);
@@ -567,8 +616,8 @@ MenuPrincipal:
           // Manipulacion de la grata
           while (true)
           {
-            t_x = 0;
-            t_y = 0;
+            t_x = NULL;
+            t_y = NULL;
             pressed = tft.getTouch(&t_x, &t_y);
             if (Serial.available() || pressed)
             {
@@ -605,7 +654,7 @@ MenuPrincipal:
                 {
                   Motor_a.disable();
                 }
-                else if(posd == 0 ){
+                else if (posd == 0 ) {
                   Motor_a.reset();
                 }
                 else
@@ -684,6 +733,19 @@ MenuPrincipal:
   }
 }
 
+void Xmm(float mm) {
+  int pasos = round((mm - 0.25181) / 0.00126);
+  Motor_x.MovePosition(pasos);
+  Serial.print("x(mm)=");
+  Serial.println(mm);
+}
+
+void Ymm(float mm) {
+  int pasos = round((mm - 40.0675) / 0.007576);
+  Motor_x.MovePosition(pasos);
+  Serial.print("x(mm)=");
+  Serial.println(mm);
+}
 //Funciones auxiliares
 
 void touch_calibrate()
