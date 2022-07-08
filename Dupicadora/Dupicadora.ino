@@ -1,6 +1,7 @@
 // Declaracion librerias
 #include "FS.h"
 
+#include "logoud.h"
 #include "Stepper.h"
 #include "stdint.h"
 #include <SPI.h>
@@ -9,6 +10,7 @@
 #define LABEL1_FONT &FreeSerif12pt7b
 #define LABEL2_FONT &FreeSansOblique12pt7b
 #define LABEL3_FONT &FreeSansBold9pt7b
+#define LABEL4_FONT &FreeSansBold12pt7b
 
 #define CALIBRATION_FILE "/TouchCalData3"
 #define REPEAT_CAL false
@@ -40,6 +42,8 @@ TFT_eSPI_Button copia;
 TFT_eSPI_Button generar;
 TFT_eSPI_Button copiaListo;
 TFT_eSPI_Button generarListo;
+TFT_eSPI_Button generar1000;
+TFT_eSPI_Button generar1500;
 TFT_eSPI_Button generarListo2;
 TFT_eSPI_Button generarCorta;
 TFT_eSPI_Button Home;
@@ -58,6 +62,7 @@ uint16_t progreso = 0;
 uint16_t t_x = 0, t_y = 0;
 boolean pressed;
 bool gListo = false;
+bool modelo = false;
 
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
@@ -83,6 +88,7 @@ void setup()
   // Inicializacion pantalla
   tft.begin();
   tft.setRotation(1);
+  tft.setSwapBytes(true);
 
   // Inicializacion de todos los botones
   copia.initButton(&tft, // REF - LEAVE AS IS
@@ -138,6 +144,26 @@ void setup()
                           TFT_WHITE, // FILL
                           "Listo", // TEXT TO PRINT
                           1); // TEXT SIZE: SEE ABOVE Line 23
+  generar1000.initButton(&tft, // REF - LEAVE AS IS
+                         85, // X Cord: SEE ABOVE Line 19
+                         200, // Y CORD: SEE ABOVE Line 20
+                         120, // WIDTH: SEE ABOVE Line 21
+                         50, // HEIGHT: SEE ABOVE Line 22
+                         TFT_WHITE, // OUTLINE
+                         TFT_BLUE, // TEXT COLOR
+                         TFT_WHITE, // FILL
+                         "1000", // TEXT TO PRINT
+                         1); // TEXT SIZE: SEE ABOVE Line 23
+  generar1500.initButton(&tft, // REF - LEAVE AS IS
+                         235, // X Cord: SEE ABOVE Line 19
+                         200, // Y CORD: SEE ABOVE Line 20
+                         120, // WIDTH: SEE ABOVE Line 21
+                         50, // HEIGHT: SEE ABOVE Line 22
+                         TFT_WHITE, // OUTLINE
+                         TFT_BLUE, // TEXT COLOR
+                         TFT_WHITE, // FILL
+                         "1500", // TEXT TO PRINT
+                         1); // TEXT SIZE: SEE ABOVE Line 23
   generarListo2.initButton(&tft, // REF - LEAVE AS IS
                            80, // X Cord: SEE ABOVE Line 19
                            200, // Y CORD: SEE ABOVE Line 20
@@ -206,11 +232,36 @@ void setup()
   // Definicion del timer para la pantalla de progreso
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &onTimer, true);
-  timerAlarmWrite(timer, 212000, true);
+  
 
   // Calibracion del tactil
   touch_calibrate();
 
+  tft.fillScreen(TFT_BLACK);
+  tft.pushImage(0, 0, animation_width, animation_height, logoud[0]);
+  delay(3000);
+  tft.fillScreen(TFT_BLACK);
+  tft.setFreeFont(LABEL3_FONT);
+  tft.setCursor(90, 60);
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(1);
+  tft.println("Desarrollado por:");
+  tft.setFreeFont(LABEL1_FONT);
+  tft.setCursor(90, 120);
+  tft.println("Jhoan F. Patino");
+  tft.setCursor(217, 110);
+  tft.print("-");
+  tft.setCursor(150, 150);
+  tft.println("&");
+  tft.setCursor(85, 180);
+  tft.println("Jonathan Chitiva");
+  delay(3500);
+  tft.fillScreen(TFT_BLACK);
+  tft.setFreeFont(LABEL4_FONT);
+  tft.setCursor(100, 120);
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(1);
+  tft.print("Cargando...");
   // Reset de los motores
   Motor_a.reset();
   Motor_x.reset();
@@ -254,6 +305,12 @@ MenuPrincipal:
       if (str == "c" || copia.contains(t_x, t_y))
       {
         //Inicializacion del modo copia
+        tft.fillScreen(TFT_BLACK);
+        tft.setFreeFont(LABEL4_FONT);
+        tft.setCursor(100, 120);
+        tft.setTextColor(TFT_WHITE);
+        tft.setTextSize(1);
+        tft.print("Cargando...");
         Motor_a.reset();
         Motor_x.reset();
         Motor_x.setSpeed(25);
@@ -289,6 +346,7 @@ MenuPrincipal:
           pressed = tft.getTouch(&t_x, &t_y);
           if (Serial.available() || (pressed && copiaListo.contains(t_x, t_y)))
           {
+            timerAlarmWrite(timer, 212000, true);
             // Activacion barra de progreso
             timerAlarmEnable(timer);
             // Generacion barra de carga
@@ -314,8 +372,8 @@ MenuPrincipal:
         digitalWrite(Pin_Rele, HIGH);
         grataStatus = true;
         Motor_a.disable();
-        Motor_x.setSpeed(400);
-        Motor_x.MovePosition(0);
+        Motor_x.setSpeed(800);
+        Motor_x.MovePosition(10000);
         Motor_a.setSpeed(200);
         Motor_a.MoveSteps(-800);
         Motor_x.setSpeed(25);
@@ -323,7 +381,7 @@ MenuPrincipal:
         Motor_a.setSpeed(100);
         Motor_a.disable();
         Motor_x.setSpeed(400);
-        Motor_x.MovePosition(0);
+        Motor_x.MovePosition(10000);
         Motor_a.reset();
         digitalWrite(Pin_Rele, LOW);
         grataStatus = false;
@@ -356,10 +414,17 @@ MenuPrincipal:
       // Seccion de generacion de llave
       else if (str == "g" || generar.contains(t_x, t_y))
       {
-        Motor_a.reset();
-        Motor_x.reset();
-        Motor_x.setSpeed(25);
-        Motor_x.MovePosition(31500);
+        tft.fillScreen(TFT_BLACK);
+        tft.setFreeFont(LABEL4_FONT);
+        tft.setCursor(100, 120);
+        tft.setTextColor(TFT_WHITE);
+        tft.setTextSize(1);
+        tft.print("Cargando...");
+        //        Motor_a.reset();
+        //        Motor_x.reset();
+        //        Motor_x.setSpeed(25);
+        //        Motor_x.MovePosition(31500);
+
         // Pantalla de generar
         tft.setFreeFont(LABEL1_FONT);
         tft.fillScreen(TFT_BLACK);
@@ -372,16 +437,17 @@ MenuPrincipal:
         tft.drawRoundRect(26, 46, 268, 118, 20, TFT_BLUE);
         tft.setCursor(40, 75);
         tft.setTextColor(TFT_WHITE, TFT_BLUE);
-        tft.println("Coloque unicamente el");
+        tft.println("Coloque y seleccione el");
         tft.setCursor(50, 110);
         tft.setTextColor(TFT_WHITE, TFT_BLUE);
         tft.println("modelo de llave en la");
-        tft.setCursor(100, 145);
+        tft.setCursor(110, 145);
         tft.setTextColor(TFT_WHITE, TFT_BLUE);
         tft.println("maquina");
         tft.setTextSize(2);
         tft.setFreeFont(LABEL2_FONT);
-        generarListo.drawButton();
+        generar1000.drawButton();
+        generar1500.drawButton();
         tft.setFreeFont(LABEL1_FONT);
         Home.drawButton();
         Serial.println("Oprima cualquier tecla para continuar");
@@ -391,8 +457,14 @@ MenuPrincipal:
           t_x = 0;
           t_y = 0;
           pressed = tft.getTouch(&t_x, &t_y);
-          if (Serial.available() || (pressed && generarListo.contains(t_x, t_y)))
+          if (Serial.available() || (pressed && generar1000.contains(t_x, t_y)))
           {
+            modelo = false;
+            break;
+          }
+          else if (Serial.available() || (pressed && generar1500.contains(t_x, t_y)))
+          {
+            modelo = true;
             break;
           }
           else if (pressed && Home.contains(t_x, t_y))
@@ -401,29 +473,52 @@ MenuPrincipal:
           }
         }
 
+        Motor_a.reset();
+        Motor_a.setSpeed(100);
+        if (modelo == false) {
+          Ymm(4.0);
+        } else {
+          Ymm(5.0);
+        }
+        Motor_x.reset();
+        Motor_x.setSpeed(25);
+        Xmm(40.0);
         while (true)
         {
           // Calibracion rapida y posicion inicial
-          Motor_a.reset();
-          Motor_a.setSpeed(100);
-          Ymm(0.0);
-          Motor_x.reset();
-          Motor_x.setSpeed(25);
-          Xmm(40.0);
+
 
           // Algoritmo generador de llaves
           randomSeed(micros());
           uint8_t guarda[5] = {random(1, 10), random(1, 10), random(1, 10), random(1, 10), random(1, 10)};
+          //uint8_t guarda[5] = {4, 3, 1, 8, 3};
           float y_offset[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
           float y_limit = 4;
           float y_min = 0.4;
           float y_temp;
           float y_calculated;
           float y_final;
-          float xg[6] = {6.0, 9.8, 13.6, 17.4, 21.2, 27.0};
+          float xg[6];
+          if (modelo == false) {
+            xg[0] = 5.6;
+            xg[1] = 9.6;
+            xg[2] = 13.6;
+            xg[3] = 17.6;
+            xg[4] = 21.6;
+            xg[5] = 27.0;
+          }
+          else {
+            xg[0] = 6.0;
+            xg[1] = 9.8;
+            xg[2] = 13.6;
+            xg[3] = 17.4;
+            xg[4] = 21.2;
+            xg[5] = 27.0;
+          }
+
           for (uint8_t i = 0; i <= 4; i++)
           {
-            y_offset[i] = guarda[i]  * 0.4;
+            y_offset[i] = guarda[i]  * 0.5;
           }
 
           for (uint16_t i = 0; i <= 270; i++)
@@ -435,7 +530,7 @@ MenuPrincipal:
               if (j == 5) {
                 y_calculated = y_temp;
               } else {
-                y_calculated = max(y_temp, y_min) + y_offset[j] - y_min;
+                y_calculated = max(y_temp, y_min) + y_limit - y_offset[j] - y_min;
               }
               y_final = min(y_calculated, y_final);
             }
@@ -463,11 +558,11 @@ MenuPrincipal:
           tft.fillTriangle(278, 90, 300, 90, 300, 120, TFT_BLACK);
           tft.fillTriangle(250, 150, 300, 105, 300, 150, TFT_BLACK);
           /////TRIANGULOS PATRON GUARDAS/////
-          tft.fillTriangle(161, 83, 183, 83, 172, round(3.83 * guarda[0] + 83.16), TFT_BLACK);
-          tft.fillTriangle(183, 83, 205, 83, 194, round(3.83 * guarda[1] + 83.16), TFT_BLACK);
-          tft.fillTriangle(205, 83, 227, 83, 216, round(3.83 * guarda[2] + 83.16), TFT_BLACK);
-          tft.fillTriangle(227, 83, 249, 83, 238, round(3.83 * guarda[3] + 83.16), TFT_BLACK);
-          tft.fillTriangle(249, 83, 271, 83, 260, round(3.83 * guarda[4] + 83.16), TFT_BLACK);
+          tft.fillTriangle(161, 83, 183, 83, 172, round(2.55 * guarda[0] + 84.44), TFT_BLACK);
+          tft.fillTriangle(183, 83, 205, 83, 194, round(2.55 * guarda[1] + 84.44), TFT_BLACK);
+          tft.fillTriangle(205, 83, 227, 83, 216, round(2.55 * guarda[2] + 84.44), TFT_BLACK);
+          tft.fillTriangle(227, 83, 249, 83, 238, round(2.55 * guarda[3] + 84.44), TFT_BLACK);
+          tft.fillTriangle(249, 83, 271, 83, 260, round(2.55 * guarda[4] + 84.44), TFT_BLACK);
           //NUMEROS DE LAS GUARDAS//
           tft.drawRoundRect(155, 40, 120, 40, 5, TFT_WHITE);
           tft.drawLine(155, 60, 275, 60, TFT_WHITE);
@@ -520,8 +615,13 @@ MenuPrincipal:
                 goto MenuPrincipal;
               }
             }
+            for (int i = 0; i < 5; i++) {
+              Serial.print(guarda[i]);
+              Serial.print(", ");
+            }
           }
           if (gListo) {
+            timerAlarmWrite(timer, 480000, true);
             // Activacion barra de progreso
             timerAlarmEnable(timer);
             // Generacion barra de carga
@@ -539,12 +639,22 @@ MenuPrincipal:
             Serial.println("Generando llave ...");
             break;
           }
+
         }
         // Generando llave
-        Motor_a.setSpeed(1500);
-        Motor_x.setSpeed(1000);
-        for (int i = 0; i < 2; i++);
+
+        Serial.println("");
+        grataStatus = true;
+        digitalWrite(Pin_Rele, HIGH);
+        delay(1000);
+        for (int i = 0; i < 2; i++)
         {
+          Motor_a.setSpeed(100);
+          Ymm(4.0);
+          Motor_x.setSpeed(25);
+          Xmm(40.0);
+          Motor_a.setSpeed(1700);
+          Motor_x.setSpeed(1200);
           for (int xp = 0; xp < 271; xp++)
           {
             Ymm(llave[xp]);
@@ -552,10 +662,11 @@ MenuPrincipal:
             Serial.print("Y = ");
             Serial.print(llave[xp]);
             Serial.print(", X = ");
-            Serial.println(40.0 - (xp + 0.0) / 10.0);
+            Serial.print(40.0 - (xp + 0.0) / 10.0);
           }
         }
-
+        grataStatus = false;
+        digitalWrite(Pin_Rele, LOW);
         //Deshabilita la pantalla de carga
         timerAlarmDisable(timer);
         progreso = 0;
@@ -575,6 +686,11 @@ MenuPrincipal:
         tft.setFreeFont(LABEL2_FONT);
         Home.drawButton();
         Serial.println("Finalizado");
+        Motor_a.reset();
+        Motor_x.reset();
+        Motor_x.sound(4);
+        delay(300);
+        Motor_x.sound(4);
         delay(5000);
         break;
 
@@ -720,31 +836,20 @@ MenuPrincipal:
         Serial.print("x(mm)=");
         Serial.println(posd);
       }
-      else if (str[0] == 'z')
-      {
-        generarLlave2(llave);
-        for (int i = 0; i < 271; i++)
-        {
-          Serial.print(llave[i]);
-          Serial.print(",");
-        }
-      }
     }
   }
 }
 
 void Xmm(float mm) {
+
   int pasos = round((mm - 0.25181) / 0.00126);
   Motor_x.MovePosition(pasos);
-  Serial.print("x(mm)=");
-  Serial.println(mm);
 }
 
 void Ymm(float mm) {
-  int pasos = round((mm - 40.0675) / 0.007576);
-  Motor_x.MovePosition(pasos);
-  Serial.print("x(mm)=");
-  Serial.println(mm);
+  float m2 = -(mm - 4);
+  int pasos = round((m2 + 37.0675) / 0.007576);
+  Motor_a.MovePosition(pasos);
 }
 //Funciones auxiliares
 
