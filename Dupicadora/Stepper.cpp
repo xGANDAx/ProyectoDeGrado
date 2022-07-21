@@ -68,7 +68,7 @@ void Stepper::reset()
 
     step_delay = reset_speed;
     digitalWrite(Pin_dir, reset_direction);
-    while (!digitalRead(Pin_sensor))
+    while (digitalRead(Pin_sensor))
     {
         digitalWrite(Pin_steps, HIGH);
         delayMicroseconds(step_delay);
@@ -78,7 +78,7 @@ void Stepper::reset()
 
     step_delay = 10 * reset_speed;
     digitalWrite(Pin_dir, !reset_direction);
-    while (digitalRead(Pin_sensor))
+    while (!digitalRead(Pin_sensor))
     {
         digitalWrite(Pin_steps, HIGH);
         delayMicroseconds(step_delay);
@@ -87,7 +87,7 @@ void Stepper::reset()
     }
 
     digitalWrite(Pin_dir, reset_direction);
-    while (!digitalRead(Pin_sensor))
+    while (digitalRead(Pin_sensor))
     {
         digitalWrite(Pin_steps, HIGH);
         delayMicroseconds(step_delay);
