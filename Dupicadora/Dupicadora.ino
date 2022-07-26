@@ -346,9 +346,6 @@ MenuPrincipal:
           pressed = tft.getTouch(&t_x, &t_y);
           if (Serial.available() || (pressed && copiaListo.contains(t_x, t_y)))
           {
-            timerAlarmWrite(timer, 212000, true);
-            // Activacion barra de progreso
-            timerAlarmEnable(timer);
             // Generacion barra de carga
             tft.setFreeFont(LABEL1_FONT);
             tft.fillScreen(TFT_BLACK);
@@ -370,6 +367,10 @@ MenuPrincipal:
         Motor_a.setSpeed(100);
         Motor_a.MovePosition(5300);
         digitalWrite(Pin_Rele, HIGH);
+        delay(1000);
+        timerAlarmWrite(timer, 212000, true);
+            // Activacion barra de progreso
+        timerAlarmEnable(timer);
         grataStatus = true;
         Motor_a.disable();
         Motor_x.setSpeed(800);
@@ -384,6 +385,7 @@ MenuPrincipal:
         Motor_x.MovePosition(10000);
         Motor_a.reset();
         digitalWrite(Pin_Rele, LOW);
+        delay(1000);
         grataStatus = false;
         Motor_x.sound(4);
         delay(300);
@@ -746,14 +748,14 @@ MenuPrincipal:
               {
                 grataStatus = true;
                 digitalWrite(Pin_Rele, HIGH);
-                delay(500);
+                delay(1000);
                 break;
               }
               else if (str == "d" || (grataOFF.contains(t_x, t_y) && grataStatus))
               {
                 grataStatus = false;
                 digitalWrite(Pin_Rele, LOW);
-                delay(500);
+                delay(1000);
                 break;
               }
               else if (str[0] == 'm')
@@ -787,6 +789,7 @@ MenuPrincipal:
               {
                 grataStatus = false;
                 digitalWrite(Pin_Rele, LOW);
+                delay(1000);
                 goto MenuPrincipal;
               }
             }
