@@ -16,7 +16,7 @@
 #define REPEAT_CAL false
 
 // Declaracion pines
-#define Pin_Rele 32
+#define Pin_Rele 33
 #define Pin_Enable_Motor_X 13
 #define Pin_Dir_Motor_X 12
 #define Pin_Pulse_Motor_X 14
@@ -281,10 +281,10 @@ MenuPrincipal:
   // Generacion del menu principal
   tft.setFreeFont(LABEL1_FONT);
   tft.fillScreen(TFT_BLACK);
-  tft.setCursor(110, 20);
+  tft.setCursor(130, 20);
   tft.setTextColor(TFT_BLUE);
   tft.setTextSize(1);
-  tft.println("Menu V0.6");
+  tft.println("Menu");
   tft.drawLine(0, 30, 320, 30, TFT_BLUE);
   tft.setTextSize(1);
   tft.setFreeFont(LABEL2_FONT);
@@ -346,9 +346,6 @@ MenuPrincipal:
           pressed = tft.getTouch(&t_x, &t_y);
           if (Serial.available() || (pressed && copiaListo.contains(t_x, t_y)))
           {
-            timerAlarmWrite(timer, 212000, true);
-            // Activacion barra de progreso
-            timerAlarmEnable(timer);
             // Generacion barra de carga
             tft.setFreeFont(LABEL1_FONT);
             tft.fillScreen(TFT_BLACK);
@@ -370,6 +367,10 @@ MenuPrincipal:
         Motor_a.setSpeed(100);
         Motor_a.MovePosition(5300);
         digitalWrite(Pin_Rele, HIGH);
+        delay(1000);
+        timerAlarmWrite(timer, 212000, true);
+            // Activacion barra de progreso
+        timerAlarmEnable(timer);
         grataStatus = true;
         Motor_a.disable();
         Motor_x.setSpeed(800);
@@ -384,6 +385,7 @@ MenuPrincipal:
         Motor_x.MovePosition(10000);
         Motor_a.reset();
         digitalWrite(Pin_Rele, LOW);
+        delay(1000);
         grataStatus = false;
         Motor_x.sound(4);
         delay(300);
@@ -392,6 +394,7 @@ MenuPrincipal:
         //Deshabilita la pantalla de carga
         timerAlarmDisable(timer);
         progreso = 0;
+        delay(1000);
 
         //  Pantallazo "finalizado"
         tft.setFreeFont(LABEL1_FONT);
@@ -420,8 +423,8 @@ MenuPrincipal:
         tft.setTextColor(TFT_WHITE);
         tft.setTextSize(1);
         tft.print("Cargando...");
-        //        Motor_a.reset();
-        //        Motor_x.reset();
+        Motor_a.reset();
+        Motor_x.reset();
         //        Motor_x.setSpeed(25);
         //        Motor_x.MovePosition(31500);
 
@@ -482,7 +485,7 @@ MenuPrincipal:
         }
         Motor_x.reset();
         Motor_x.setSpeed(25);
-        Xmm(40.0);
+        Xmm(41.0);
         while (true)
         {
           // Calibracion rapida y posicion inicial
@@ -494,7 +497,7 @@ MenuPrincipal:
           //uint8_t guarda[5] = {4, 3, 1, 8, 3};
           float y_offset[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
           float y_limit = 4;
-          float y_min = 0.4;
+          float y_min = 0.25;
           float y_temp;
           float y_calculated;
           float y_final;
@@ -652,17 +655,17 @@ MenuPrincipal:
           Motor_a.setSpeed(100);
           Ymm(4.0);
           Motor_x.setSpeed(25);
-          Xmm(40.0);
+          Xmm(41.0);
           Motor_a.setSpeed(1700);
           Motor_x.setSpeed(1200);
           for (int xp = 0; xp < 271; xp++)
           {
             Ymm(llave[xp]);
-            Xmm(40.0 - (xp + 0.0) / 10.0);
+            Xmm(41.0 - (xp + 0.0) / 10.0);
             Serial.print("Y = ");
             Serial.print(llave[xp]);
             Serial.print(", X = ");
-            Serial.print(40.0 - (xp + 0.0) / 10.0);
+            Serial.print(41.0 - (xp + 0.0) / 10.0);
           }
         }
         grataStatus = false;
@@ -670,7 +673,8 @@ MenuPrincipal:
         //Deshabilita la pantalla de carga
         timerAlarmDisable(timer);
         progreso = 0;
-
+        delay(1000);
+        
         //  Pantallazo "finalizado"
         tft.setFreeFont(LABEL1_FONT);
         tft.fillScreen(TFT_BLACK);
@@ -744,14 +748,14 @@ MenuPrincipal:
               {
                 grataStatus = true;
                 digitalWrite(Pin_Rele, HIGH);
-                delay(500);
+                delay(1000);
                 break;
               }
               else if (str == "d" || (grataOFF.contains(t_x, t_y) && grataStatus))
               {
                 grataStatus = false;
                 digitalWrite(Pin_Rele, LOW);
-                delay(500);
+                delay(1000);
                 break;
               }
               else if (str[0] == 'm')
@@ -785,6 +789,7 @@ MenuPrincipal:
               {
                 grataStatus = false;
                 digitalWrite(Pin_Rele, LOW);
+                delay(1000);
                 goto MenuPrincipal;
               }
             }
@@ -848,7 +853,7 @@ void Xmm(float mm) {
 
 void Ymm(float mm) {
   float m2 = -(mm - 4);
-  int pasos = round((m2 + 37.0675) / 0.007576);
+  int pasos = round((m2 + 39.0675) / 0.007576);
   Motor_a.MovePosition(pasos);
 }
 //Funciones auxiliares
